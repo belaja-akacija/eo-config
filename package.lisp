@@ -4,5 +4,5 @@
   (:export
     #:globalize-symbol
     #:define-allowed-names
-    #:create-symbols-from-list
-    #:unintern-symbols))
+    #:intern-symbols-from-list
+    #:unintern-symbols-from-list))
