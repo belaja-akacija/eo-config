@@ -2,11 +2,8 @@
 ;;;; BY: Eliza Oselskyi, 2025
 
 ;;; TODO:
-;;; - create a way to define a format for a particular parameter and a
-;;; generalized function/macro to test the config against the definitions
 ;;; - Create a way to save state (allow a program to be persistent by defining
 ;;; a file to write parameters to)
-
 
 (in-package :eo-config)
 
