@@ -65,9 +65,26 @@
     (setf (getf *config-parameter-rules* indicator) body)
     nil))
 
+;;; Example of macro "set-rules"
+;;; (set-rules
+;;;   '(author (lambda (x) (stringp x))
+;;;   '(x (lambda (x) (functionp (eval x))))
+;;;  )
+
+;; TODO: Possibly have it check if there is a global variable set with the
+;; same name as the indicator and have it give a warning of a mismatch.
+
 (defmacro set-rules (&rest rules)
   `(mapcar #'(lambda (rule-set)
                (define-parameter-rule (first rule-set) (getf rule-set (first rule-set))))
            (list ,@rules)))
+
+(defun test-rule (indicator rule-set)
+  "Tests a given indicator's rule-set against the actual value in the global scope"
+  ;; TODO: Error handeling of when a symbol is unbound/non-existent
+  (let ((global (symbol-value (find-symbol (symbol-name (globalize-symbol indicator)))))
+        (rule (eval (getf rule-set indicator))))
+    (assert (funcall rule global) (global) "Parameter ~S does not satisfy rule: ~S" global (getf rule-set indicator))))
+
 
 ;(swank:find-definition-for-thing #'car)
