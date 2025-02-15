@@ -4,4 +4,6 @@
   (:export
     #:define-allowed-names
     #:load-config
-    #:make-config-globals))
+    #:make-config-globals
+    #:set-rules
+    #:test-rule))
