@@ -9,6 +9,25 @@
     ((stringp obj))
     (t nil)))
 
+(defun flush-global (global-symbol)
+  "Refreshes global symbol back to default (unbound). Returns no value."
+  (if (boundp global-symbol)
+      (makunbound global-symbol)
+      nil)
+  (proclaim (list 'special global-symbol)))
+
+(defun filter-config (file symbol-list)
+  (remove-if #'null
+             (mapcar #'(lambda (x)
+                         (if (member x symbol-list)
+                             (getf file x)
+                             nil)) file)))
+
+(defun globalize-symbol (symbol)
+  "Builds a new symbol in the conventional global variable style. (*example-global-var*)"
+  (make-symbol (concatenate 'string "*" (symbol-name symbol) "*")))
+
+
 ; (defun intern-symbols-from-list (obj)
 ;   "Interns symbols from a list of strings or symbols, or a singular string or symbol. Returns a list of successful symbols that were interned."
 ;   (labels ((helper (sym)

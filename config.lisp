@@ -14,27 +14,9 @@
 (setf *config-parameter-rules* nil)
 
 
-(defun flush-global (global-symbol)
-  "Refreshes global symbol back to default (unbound). Returns no value."
-  (if (boundp global-symbol)
-      (makunbound global-symbol)
-      nil)
-  (proclaim (list 'special global-symbol)))
-
 (defun load-config (file)
   (with-open-file (stream file :direction :input)
     (read stream t)))
-
-(defun filter-config (file symbol-list)
-  (remove-if #'null
-             (mapcar #'(lambda (x)
-                         (if (member x symbol-list)
-                             (getf file x)
-                             nil)) file)))
-
-(defun globalize-symbol (symbol)
-  "Builds a new symbol in the conventional global variable style. (*example-global-var*)"
-  (make-symbol (concatenate 'string "*" (symbol-name symbol) "*")))
 
 (defmacro define-allowed-names (&rest symbols)
   "Creates a global variable of allowed parameter names for the config file."
