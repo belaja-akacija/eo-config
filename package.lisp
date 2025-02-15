@@ -6,4 +6,8 @@
     #:load-config
     #:make-config-globals
     #:set-rules
-    #:test-rule))
+    #:test-rule
+    ; special globals
+    #:*config-allowed-names*
+    #:*config-parameter-rules*
+    ))

@@ -10,6 +10,10 @@
 (declaim (special *config-globals-list*))
 (declaim (special *config-parameter-rules*))
 
+(setf *config-globals-list* nil)
+(setf *config-parameter-rules* nil)
+
+
 (defun flush-global (global-symbol)
   "Refreshes global symbol back to default (unbound). Returns no value."
   (if (boundp global-symbol)
