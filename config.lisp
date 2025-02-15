@@ -1,53 +1,44 @@
 (in-package :eo-config)
 
+(declaim (special *config-globals-list*))
+
+(defun flush-globals-list ()
+  "Refreshes global config list back to default (unbound). Returns no value."
+  (if (boundp '*config-globals-list*)
+      (makunbound '*config-globals-list*)
+      nil)
+  (proclaim `(special *config-globals-list*)))
+
+(defun load-config (file)
+  (with-open-file (stream file :direction :input)
+    (read stream t)))
+
+(defun filter-config (file symbol-list)
+  (remove-if #'null
+             (mapcar #'(lambda (x)
+                         (if (member x symbol-list)
+                             (getf file x)
+                             nil)) file)))
+
 (defun globalize-symbol (symbol)
+  "Builds a new symbol in the conventional global variable style. (*example-global-var*)"
   (make-symbol (concatenate 'string "*" (symbol-name symbol) "*")))
 
-
 (defmacro define-allowed-names (&rest symbols)
-  "Creates a global variable of allowed parameter names for the config file. Returns a list; non-true/false items are objects that couldn't be uninterned."
-  (let ((string-list `(mapcar #'(lambda (x)
-                                  (symbol-name x))
-                              (list ,@symbols)))
-        (allowed-names (intern (symbol-name (globalize-symbol 'config-allowed-names)))))
-    `(defparameter ,allowed-names ,string-list)))
+  "Creates a global variable of allowed parameter names for the config file."
+  (flush-globals-list)
+  (let ((allowed-names (intern (symbol-name (globalize-symbol 'config-allowed-names)))))
+    `(defparameter ,allowed-names (list ,@symbols))))
 
-;; TODO: INTERN AND UNINTERN functions: should they be private?
-(defun intern-symbols-from-list (symbol-list)
-  "Interns symbols from a list of strings or symbols. Returns a list; non-true/false items are objects that couldn't be uninterned."
-  (mapcar #'(lambda (sym)
-              (let ((temp (cond
-                            ((symbolp sym)
-                             (symbol-name sym))
-                            ((stringp sym)
-                             sym)
-                            (t nil))))
-                (if (eql temp nil)
-                    sym
-                    (progn
-                     (setq sym (intern temp))
-                     ;(eval `(defparameter ,sym nil)) ;may want to do this elsewhere. Just intern the symbols.
-                     t))))
-          symbol-list))
+(defun make-config-globals (file symbol-list)
+  (labels ((helper (sym val)
+             "Makes a symbol into a special global variable and sets its value"
+             (let ((x (set sym (intern (symbol-name sym)))))
+               (proclaim `(special ,x))
+               (set x val)
+               x)))
+    (let ((globals (mapcar #'globalize-symbol symbol-list))
+          (vals (filter-config file symbol-list)))
+      (setf *config-globals-list* (mapcar #'helper globals vals)))))
 
-(defun unintern-symbols-from-list (symbol-list)
-  "Uninterns symbols from a list. Returns a list; non-true/false items are objects that couldn't be uninterned."
-  (mapcar #'(lambda (sym)
-              (cond
-                ((symbolp sym)
-                 (unintern sym))
-                ((stringp sym)
-                 (unintern (find-symbol sym)))
-                (t sym)))
-          symbol-list))
-
-(defun make-config-globals (symbol-list)
-  (unintern-symbols-from-list symbol-list) ; ensure all symbols are uninterned
-  ()
-  )
-
-
-(with-open-file (f (merge-pathnames (uiop:getcwd) "configrc.lisp"))
-  (let ((contents (make-string (file-length f))))
-    (read-sequence contents f)
-    contents))
+;(swank:find-definition-for-thing #'car)

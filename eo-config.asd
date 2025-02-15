@@ -3,4 +3,5 @@
   :author "Eliza Oselskyi"
   :components
   ((:file "package")
-   (:file "config" :depends-on ("package"))))
+   (:file "utils" :depends-on ("package"))
+   (:file "config" :depends-on ("package" "utils"))))

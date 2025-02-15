@@ -2,7 +2,6 @@
   (:use :cl)
   ;; CONFIG
   (:export
-    #:globalize-symbol
     #:define-allowed-names
-    #:intern-symbols-from-list
-    #:unintern-symbols-from-list))
+    #:load-config
+    #:make-config-globals))
