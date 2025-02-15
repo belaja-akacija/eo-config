@@ -1,13 +1,24 @@
+;;;; My personal configuration file library
+;;;; BY: Eliza Oselskyi, 2025
+
+;;; TODO:
+;;; - create a way to define a format for a particular parameter and a
+;;; generalized function/macro to test the config against the definitions
+;;; - Create a way to save state (allow a program to be persistent by defining
+;;; a file to write parameters to)
+
+
 (in-package :eo-config)
 
 (declaim (special *config-globals-list*))
+(declaim (special *config-parameter-rules*))
 
-(defun flush-globals-list ()
-  "Refreshes global config list back to default (unbound). Returns no value."
-  (if (boundp '*config-globals-list*)
-      (makunbound '*config-globals-list*)
+(defun flush-global (global-symbol)
+  "Refreshes global symbol back to default (unbound). Returns no value."
+  (if (boundp global-symbol)
+      (makunbound global-symbol)
       nil)
-  (proclaim `(special *config-globals-list*)))
+  (proclaim (list 'special global-symbol)))
 
 (defun load-config (file)
   (with-open-file (stream file :direction :input)
@@ -26,7 +37,7 @@
 
 (defmacro define-allowed-names (&rest symbols)
   "Creates a global variable of allowed parameter names for the config file."
-  (flush-globals-list)
+  (flush-global '*config-globals-list*)
   (let ((allowed-names (intern (symbol-name (globalize-symbol 'config-allowed-names)))))
     `(defparameter ,allowed-names (list ,@symbols))))
 
@@ -40,5 +51,23 @@
     (let ((globals (mapcar #'globalize-symbol symbol-list))
           (vals (filter-config file symbol-list)))
       (setf *config-globals-list* (mapcar #'helper globals vals)))))
+
+
+(defun define-parameter-rule (indicator body)
+  "Creates/updates a definition in *config-parameter-rules*"
+  (if (boundp '*config-parameter-rules*)
+      nil
+      (setf *config-parameter-rules* nil))
+  (let ((rule (getf *config-parameter-rules* indicator)))
+    (if rule
+        (format t "Overriding previous rule: ~A :: '~S' -> '~S'~%" indicator rule body)
+        (format t "Creating new rule: ~A :: '~S'~%" indicator body))
+    (setf (getf *config-parameter-rules* indicator) body)
+    nil))
+
+(defmacro set-rules (&rest rules)
+  `(mapcar #'(lambda (rule-set)
+               (define-parameter-rule (first rule-set) (getf rule-set (first rule-set))))
+           (list ,@rules)))
 
 ;(swank:find-definition-for-thing #'car)
