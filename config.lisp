@@ -59,8 +59,18 @@
 
 (defmacro set-rules (&rest rules)
   `(mapcar #'(lambda (rule-set)
-               (define-parameter-rule (first rule-set) (getf rule-set (first rule-set))))
+               (if (equal (getf rule-set (first rule-set)) (getf *config-parameter-rules* (first rule-set)))
+                   nil
+                   (define-parameter-rule (first rule-set) (getf rule-set (first rule-set)))))
            (list ,@rules)))
+
+
+(defmacro with-parameters ((&rest params) rule)
+  `(dolist (x ',params)
+     ;should it be this? --> (define-parameter-rule x ',rule)
+     (if (equal ,rule (getf *config-parameter-rules* x))
+         nil
+         (define-parameter-rule x ,rule))))
 
 (defun test-rule (indicator rule-set)
   "Tests a given indicator's rule-set against the actual value in the global scope"
@@ -68,6 +78,3 @@
   (let ((global (symbol-value (find-symbol (symbol-name (globalize-symbol indicator)))))
         (rule (eval (getf rule-set indicator))))
     (assert (funcall rule global) (global) "Parameter ~S does not satisfy rule: ~S" global (getf rule-set indicator))))
-
-
-;(swank:find-definition-for-thing #'car)

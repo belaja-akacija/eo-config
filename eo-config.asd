@@ -1,6 +1,7 @@
 (asdf/defsystem:defsystem "eo-config"
-  :version "1.0.1"
+  :version "1.0.2"
   :author "Eliza Oselskyi"
+  :serial t
   :components
   ((:file "package")
    (:file "utils" :depends-on ("package"))
