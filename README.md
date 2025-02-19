@@ -25,7 +25,7 @@ It creates the global variables and sets the value associated to it in the confi
 (make-config-globals (load-config "example.conf") *config-allowed-names*)
 ```
 
-You can also optionally set rules the configuration parameters must adhere to:
+Optionally, you can also set rules the configuration parameters must adhere to:
 
 ```lisp
 (set-rules
