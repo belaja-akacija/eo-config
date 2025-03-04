@@ -1,34 +1,34 @@
-(in-package :eo-config)
+(in-package :eo-config/utils)
 
-(defun truep (x)
-  "Convinience function to test if a value is explicitly T"
-  (eq x T))
+ (defun truep (x)
+   "Convinience function to test if a value is explicitly T"
+   (eq x T))
 
-(defun valid-symbolp (obj)
-  "Tests if an object is either a symbol or string"
-  (cond
-    ((symbolp obj))
-    ((stringp obj))
-    (t nil)))
+ (defun valid-symbolp (obj)
+   "Tests if an object is either a symbol or string"
+   (cond
+     ((symbolp obj))
+     ((stringp obj))
+     (t nil)))
 
-(defun flush-global (global-symbol)
-  "Refreshes global symbol back to default (unbound). Returns no value."
-  (if (boundp global-symbol)
-      (makunbound global-symbol)
-      nil)
-  (proclaim (list 'special global-symbol)))
+ (defun flush-global (global-symbol)
+   "Refreshes global symbol back to default (unbound). Returns no value."
+   (if (boundp global-symbol)
+       (makunbound global-symbol)
+       nil)
+   (proclaim (list 'special global-symbol)))
 
-(defun filter-config (file symbol-list)
-  (remove-if #'null
-             (mapcar #'(lambda (x)
-                         (if (member x symbol-list)
-                             (getf file x)
-                             nil)) file)))
+ (defun filter-config (file symbol-list)
+   (remove-if #'null
+              (mapcar #'(lambda (x)
+                          (if (member x symbol-list)
+                              (getf file x)
+                              nil)) file)))
 
-(defun globalize-symbol (symbol)
-  "Builds a new symbol in the conventional global variable style. (*example-global-var*)"
-  (make-symbol (concatenate 'string "*" (symbol-name symbol) "*")))
+ (defun globalize-symbol (symbol)
+   "Builds a new symbol in the conventional global variable style. (*example-global-var*)"
+   (make-symbol (concatenate 'string "*" (symbol-name symbol) "*")))
 
-(defun check-config-mismatch (file symbol-list)
-  "Checks if number of parameters in config match number of parameters in global-symbol-list. Returns T on success."
-  (= (/ (length file) 2)  (length symbol-list) ))
+ (defun check-config-mismatch (file symbol-list)
+   "Checks if number of parameters in config match number of parameters in global-symbol-list. Returns T on success."
+   (= (/ (length file) 2)  (length symbol-list) ))
