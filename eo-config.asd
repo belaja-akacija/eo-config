@@ -5,5 +5,4 @@
   :components
   ((:file "package")
    (:file "utils")
-   (:file "testing")
    (:file "config" :depends-on ("utils"))))
