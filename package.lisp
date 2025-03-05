@@ -15,7 +15,7 @@
   ;   ))
 
 (uiop/package:define-package :eo-config/utils
-  (:use :eo-config/package :eo-config)
+  (:use :eo-config/package)
   (:export
    #:truep
    #:valid-symbolp
@@ -24,8 +24,6 @@
    #:globalize-symbol
    #:check-config-mismatch
    ))
-
-;; (uiop/configuration::compute-user-cache) finds where the fasl files are
 
 (uiop/package:define-package :eo-config (:use :eo-config/package)
   (:use :eo-config/package :eo-config/utils)
@@ -40,3 +38,6 @@
      #:*config-allowed-names*
      #:*config-globals-list*
      #:*config-parameter-rules*))
+
+
+;; (uiop/configuration::compute-user-cache) finds where the fasl files are

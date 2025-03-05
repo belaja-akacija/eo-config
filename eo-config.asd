@@ -4,5 +4,5 @@
   :serial t
   :components
   ((:file "package")
-   (:file "utils" :depends-on ("package"))
-   (:file "config" :depends-on ("package" "utils"))))
+   (:file "utils")
+   (:file "config" :depends-on ("utils"))))
