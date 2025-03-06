@@ -6,26 +6,42 @@ A simple library to manage configuration files of tools I write.
 
 It reads in a file, assuming that the first line of the file is a plist.
 
-First, you should define the allowed parameter names in your configuration file,
-using the macro `define-allowed-names`. This list gets stored in the special variable `*config-allowed-names*`.
+First, you should create an instance of a configuration set, using the class `config-set`:
+```lisp
+(defconstant +default-config+ (make-instance 'config-set :name 'default :file-location "main.config"))
+```
+
+Then, you should define the allowed parameter names in your configuration file,
+using the method `define-allowed-names`. This list gets stored in the slot `allowed-names`.
 
 
 ```lisp
-(define-allowed names
+(define-allowed-names +default-config+
     'foo-dir
     'bar-value
     'baz-toggle)
 ```
+The general form of this is`(define-allowed-names object &rest symbols)`
 
-The function `make-config-globals` takes in the configuration file and a list of symbols.
-Here, you can pass in the special variable `*config-allowed-names*`.
-It creates the global variables and sets the value associated to it in the configuration file.
+If you haven't done so yet, you should assign the slot `'file-location` to
+wherever the configuration file is for that particular set. Or, you may just
+pass the location as the parameter for the method `read-in-config`. This method
+binds the `parameters` slot with the IDs and values of the parameters. It first
+filters the file contents, ensuring that only the parameters with the allowed
+names are selected.
+
+For the first case, you simply pass the symbol `'file-location` to the method,
+to signal to it that it should read from the slot.
 
 ```lisp
-(make-config-globals (load-config "example.conf") *config-allowed-names*)
+(read-in-config +default-config+ "main.config")
+;; -OR-
+(read-in-config +default-config+ 'file-location)
 ```
 
-Optionally, you can also set rules the configuration parameters must adhere to:
+Optionally, you may also set rules the configuration parameters must adhere to:
+
+__STOPPED HERE__ FINISH THIS
 
 ```lisp
 (set-rules

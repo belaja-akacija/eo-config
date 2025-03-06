@@ -20,6 +20,9 @@
   ((name
      :initarg :name
      :accessor name)
+  (file-location
+    :initarg :file-location
+    :accessor file-location)
    (allowed-names
      :initarg :allowed-names
      :accessor allowed-names)
@@ -32,7 +35,7 @@
      :accessor parameter-rules
      :initform '())))
 
-(defconstant +config-default-class+ (make-instance 'config-set :name 'default))
+;(defconstant +config-default-class+ (make-instance 'config-set :name 'default))
 
 (defgeneric define-allowed-names (obj &rest sym)
   (:documentation "Assigns allowed names to the set")
@@ -44,12 +47,26 @@
 
 (defgeneric read-in-config (obj file)
   (:documentation "Read in the parameter values from a file into set")
-  (:method ((obj config-set) file)
+  (:method (obj file)
     (let ((vals (filter-config (load-config file) (allowed-names obj)))
           (plist '()))
       (mapcar #'(lambda (indicator body)
                   (setf (getf plist indicator) body)) (allowed-names obj) vals)
-      (setf (parameters obj) plist))))
+      (setf (parameters obj) plist)))
+  (:method ((obj config-set) (file (eql 'file-location)))
+    (if (slot-boundp obj file)
+        (let ((vals (filter-config (load-config (file-location obj)) (allowed-names obj)))
+           (plist '()))
+       (mapcar #'(lambda (indicator body)
+                   (setf (getf plist indicator) body)) (allowed-names obj) vals)
+       (setf (parameters obj) plist))
+        (format t "~A does not have a file specified." obj))))
+
+(defgeneric get-config-param (obj id)
+  (:documentation "Gets a configuration parameter from object")
+  (:method ((obj config-set) id)
+    (getf (parameters obj) id)))
+(define-allowed-names )
 
 (defgeneric add-parameter-rule (obj indicator body)
   (:documentation "Adds a parameter rule to the set")
@@ -62,6 +79,10 @@
                  (format t "Overriding previous rule: ~A :: '~S' -> '~S'~%" indicator rule body)
                  (format t "Creating new rule: ~A :: '~S'~%" indicator body))
              (setf (getf (parameter-rules obj) indicator) body))))))
+
+(defmacro set-rules (obj &rest rules)
+  `(mapcar #'(lambda (rule-set)
+               (add-parameter-rule ,obj (first rule-set) (getf rule-set (first rule-set)))) (list ,@rules)))
 
 (defgeneric test-rule (indicator obj)
   (:documentation "Tests a given indicator's rule-set against the actual value in the parameter")

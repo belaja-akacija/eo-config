@@ -25,11 +25,12 @@
    #:allowed-names
    #:parameters
    #:parameter-rules
-   #:+config-default-class+
+   #:file-location
    ;; METHODS
    #:define-allowed-names
    #:read-in-config
    #:add-parameter-rule
+   #:get-config-param
    ;; FUNCTIONS AND MACROS
    #:with-parameters))
 
