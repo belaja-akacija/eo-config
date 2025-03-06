@@ -41,30 +41,37 @@ to signal to it that it should read from the slot.
 
 Optionally, you may also set rules the configuration parameters must adhere to:
 
-__STOPPED HERE__ FINISH THIS
-
 ```lisp
-(set-rules
+(set-rules +default-config+
     '(foo-dir (lambda (x) (pathnamep x)))
     '(bar-value (lambda (x) (numberp x)))
     '(baz-toggle (lambda (x) (or (eq x T) (null x))))
     )
 ```
 
-`set-rules` takes in a list, with the first value being the symbol you want to apply the rule on, the second value a form.
+`set-rules` takes in the configuration set and a list, with the first value being the symbol you want to apply the rule on, the second value a form.
 Currently, it only works if you encapsulate the test in an anonymous function.
 
-It assigns the rule list to the special variable `*config-parameter-rules*`
+It assigns the rule list to the slot `parameter-rules`.
 
 
 Then, you can test your config against the rule list:
 
 ```lisp
-(test-rule 'foo-dir *config-parameter-rules*)
+(test-rule 'foo-dir +default-config+)
+;; GENERAL FORM
+(test-rule indicator object)
 ```
 
-It takes in the symbol you want to test and a plist of rules.
+If you have a number of different parameters that all should have the same rule, you can use the macro `with-parameters`:
 
+```lisp
+(with-parameters +default-config+
+(foo-dir huzit-dir)
+(lambda (x) (pathnamep x)))
+;; GENERAL FORM
+(with-parameters object (&rest indicators) rule)
+```
 
 So far, that's pretty much it, for now! It does the very bare minimum I need to get a tool up and running quickly.
 I probably will periodically add features and convenience functions to make it easier to use.
