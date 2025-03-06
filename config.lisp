@@ -53,7 +53,6 @@
   (:documentation "Gets a configuration parameter from object")
   (:method ((obj config-set) id)
     (getf (parameters obj) id)))
-(define-allowed-names )
 
 (defgeneric add-parameter-rule (obj indicator body)
   (:documentation "Adds a parameter rule to the set")
