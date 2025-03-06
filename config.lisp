@@ -72,8 +72,8 @@
   (:documentation "Adds a parameter rule to the set")
   (:method ((obj config-set) indicator body)
     (let ((rule (getf (parameter-rules obj) indicator)))
-      (cond ((and rule (eql rule body))
-             (format t "Nothing to do. Rule ~A :: '~S'~%Already exists." indicator body))
+      (cond ((and rule (equal rule body))
+             (format t "Nothing to do. Rule ~A :: '~S' Already exists.~%" indicator body))
             ((or rule t)
              (if rule
                  (format t "Overriding previous rule: ~A :: '~S' -> '~S'~%" indicator rule body)
@@ -91,7 +91,7 @@
           (rule (eval (getf (parameter-rules obj) indicator))))
       (assert (funcall rule val) (val) "Parameter ~S does not satisfy rule: ~S" val rule))))
 
-(defmacro with-parameters (place (&rest params) rule)
+(defmacro with-parameters (obj (&rest indicators) rule)
   "Sets the same rule for multiple indicators"
-  `(dolist (x ',params)
-     (add-parameter-rule ,place x ,rule)))
+  `(dolist (x ',indicators)
+     (add-parameter-rule ,obj x ,rule)))
