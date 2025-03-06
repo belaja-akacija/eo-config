@@ -5,15 +5,6 @@
 ;;; - Create a way to save state (allow a program to be persistent by defining
 ;;; a file to write parameters to)
 
-;; TODO: allow optional defining of allowed names for different configuration
-;; sets. Default should just be the normal global one as is now. If user
-;; creates a new set, create a global var called
-;; *config-globals-list-<set-name>*
-;; Likewise, for setting parameter rules -->
-;; *config-parameter-rules-<set-name>*
-;; The desired format should be:
-;; (define-allowed-names ((&rest symbols) &optional &key (set-name 'default)))
-
 (in-package :eo-config)
 
 (defclass config-set ()
