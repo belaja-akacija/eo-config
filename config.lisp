@@ -1,10 +1,6 @@
 ;;;; My personal configuration file library
 ;;;; BY: Eliza Oselskyi, 2025
 
-;;; TODO:
-;;; - Create a way to save state (allow a program to be persistent by defining
-;;; a file to write parameters to)
-
 (in-package :eo-config)
 
 (defclass config-set ()
