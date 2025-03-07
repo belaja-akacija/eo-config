@@ -53,3 +53,18 @@
   (with-open-file (stream file :direction :input)
     (read stream t)))
 
+(defun every-other (lst &key (offset :odd))
+  (let ((counter (length lst))
+        (o (cond ((eql offset :odd)
+                  1)
+                 ((eql offset :even)
+                  0)
+                 (t 1))))
+   (remove-if #'null (mapcar #'(lambda (x)
+               (if (equal (mod counter 2) o)
+                   (progn
+                     (setf counter (1- counter))
+                     x)
+                   (progn
+                     (setf counter (1- counter))
+                     nil))) lst))))

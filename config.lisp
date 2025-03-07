@@ -40,7 +40,7 @@
   (:method (obj file)
     (warn "Object does not have the required slots for this operation."))
   (:method ((obj config-set) file)
-    (let ((ids (every-other (load-config file) (length (load-config file)) 1))
+    (let ((ids (every-other (load-config file)))
           (vals (load-config file))
           (plist '()))
       (mapcar #'(lambda (indicator)
