@@ -1,3 +1,4 @@
+
 ;;;; My personal configuration file library
 ;;;; BY: Eliza Oselskyi, 2025
 
@@ -12,7 +13,8 @@
     :accessor file-location)
    (allowed-names
      :initarg :allowed-names
-     :accessor allowed-names)
+     :accessor allowed-names
+     :initform nil)
    (parameters
      :initarg :parameters
      :accessor parameters
@@ -32,8 +34,18 @@
   (:method ((obj config-set) &rest sym)
     (setf (allowed-names obj) sym)))
 
+;; TODO refactor #'every-other so I don't have to put in the length every time
 (defgeneric read-in-config (obj file)
   (:documentation "Read in the parameter values from a file into set")
+  (:method (obj file)
+    (warn "Object does not have the required slots for this operation."))
+  (:method ((obj config-set) file)
+    (let ((ids (every-other (load-config file) (length (load-config file)) 1))
+          (vals (load-config file))
+          (plist '()))
+      (mapcar #'(lambda (indicator)
+                  (setf (getf plist indicator) (getf vals indicator))) ids)
+      (setf (parameters obj) plist)))
   (:method (obj file)
     (let ((vals (filter-config (load-config file) (allowed-names obj)))
           (plist '()))
@@ -43,16 +55,25 @@
   (:method ((obj config-set) (file (eql 'file-location)))
     (if (slot-boundp obj file)
         (let ((vals (filter-config (load-config (file-location obj)) (allowed-names obj)))
-           (plist '()))
-       (mapcar #'(lambda (indicator body)
-                   (setf (getf plist indicator) body)) (allowed-names obj) vals)
-       (setf (parameters obj) plist))
+              (plist '()))
+          (mapcar #'(lambda (indicator body)
+                      (setf (getf plist indicator) body)) (allowed-names obj) vals)
+          (setf (parameters obj) plist))
         (format t "~A does not have a file specified." obj))))
 
 (defgeneric get-config-param (obj id)
   (:documentation "Gets a configuration parameter from object")
   (:method ((obj config-set) id)
     (getf (parameters obj) id)))
+
+(defgeneric check-valid-config-set-p (obj)
+  (:documentation "Checks to make sure the object has all the right slots for a configuration set")
+  (:method (obj)
+    ;; check slots
+    (and (slot-boundp obj 'file-location) (slot-boundp obj 'allowed-names) (slot-boundp obj 'parameters))
+    ))
+
+(check-valid-config-set-p (make-instance 'config-set))
 
 (defgeneric add-parameter-rule (obj indicator body)
   (:documentation "Adds a parameter rule to the set")
