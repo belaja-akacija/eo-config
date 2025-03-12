@@ -1,4 +1,3 @@
-
 ;;;; My personal configuration file library
 ;;;; BY: Eliza Oselskyi, 2025
 
@@ -70,10 +69,7 @@
   (:documentation "Checks to make sure the object has all the right slots for a configuration set")
   (:method (obj)
     ;; check slots
-    (and (slot-boundp obj 'file-location) (slot-boundp obj 'allowed-names) (slot-boundp obj 'parameters))
-    ))
-
-(check-valid-config-set-p (make-instance 'config-set))
+    (and (slot-boundp obj 'file-location) (slot-boundp obj 'allowed-names) (slot-boundp obj 'parameters))))
 
 (defgeneric add-parameter-rule (obj indicator body)
   (:documentation "Adds a parameter rule to the set")
