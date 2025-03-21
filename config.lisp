@@ -33,7 +33,6 @@
   (:method ((obj config-set) &rest sym)
     (setf (allowed-names obj) sym)))
 
-;; TODO refactor #'every-other so I don't have to put in the length every time
 (defgeneric read-in-config (obj file)
   (:documentation "Read in the parameter values from a file into set")
   (:method (obj file)
